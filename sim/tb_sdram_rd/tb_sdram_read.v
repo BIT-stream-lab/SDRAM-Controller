@@ -59,6 +59,7 @@ defparam sdram_model_plus_inst.mem_sizes = 2*1024*1024; //L-Bank容量
 //**************************** Clk And Rst ***************************//
 //********************************************************************//
 
+
 //时钟、复位信号
 initial
   begin
@@ -70,18 +71,7 @@ initial
 
 always  #5 sys_clk = ~sys_clk;
 
-reg sys_clk_shift;
 
-initial begin
-    fork
-        #1
-        sys_clk_shift <= 1;
-        forever begin
-            #5
-            sys_clk_shift <= ~sys_clk_shift;
-        end
-    join
-end
 //rst_n:复位信号
 assign  rst_n = sys_rst_n ;
 
@@ -192,7 +182,7 @@ sdram_model_plus    sdram_model_plus_inst(
     .Dq     (sdram_dq       ),
     .Addr   (sdram_addr     ),
     .Ba     (sdram_ba       ),
-    .Clk    (sys_clk_shift ),
+    .Clk    (sys_clk ),
     .Cke    (1'b1           ),
     .Cs_n   (sdram_cmd[3]   ),
     .Ras_n  (sdram_cmd[2]   ),

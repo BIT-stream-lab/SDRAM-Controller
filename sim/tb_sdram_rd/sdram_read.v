@@ -110,12 +110,12 @@ module  sdram_read
                     rd_state <= RD_CAS;
                 end
                 RD_CAS:begin
-                    if (cnt_clk == RD_CAS_CLK - 'd1) begin //cnt_clk从RD_CAS状态开始计数，在其跳转到RD_RDATA状态时，其计数值为2
+                    if (cnt_clk == RD_CAS_CLK ) begin //cnt_clk从RD_CAS状态开始计数，在其跳转到RD_RDATA状态时，其计数值为3
                         rd_state <= RD_RDATA;
                     end
                 end
                 RD_RDATA:begin
-                    if (cnt_clk == rd_burst_len + 'd2) begin//所以这里是rd_burst_len + 'd2，计数范围是2~rd_burst_len + 'd2
+                    if (cnt_clk == rd_burst_len + RD_CAS_CLK) begin//所以这里是rd_burst_len + 'd3，计数范围是3~rd_burst_len + 'd3
                         rd_state <= RD_PRE;
                     end
                 end
@@ -186,9 +186,9 @@ module  sdram_read
 always @(posedge sys_clk) begin
     if (~sys_rst_n) begin
         rd_fifo_wr_en <= 0;
-    end else if (rd_state == RD_CAS && cnt_clk == RD_CAS_CLK - 'd1) begin //通过计数器，控制rd_fifo_wr_en何时有效
+    end else if (rd_state == RD_CAS && cnt_clk == RD_CAS_CLK ) begin //通过计数器，控制rd_fifo_wr_en何时有效
         rd_fifo_wr_en <= 1;
-    end else if (rd_state == RD_RDATA && cnt_clk == rd_burst_len + 'd2) begin
+    end else if (rd_state == RD_RDATA && cnt_clk == rd_burst_len + RD_CAS_CLK) begin
         rd_fifo_wr_en <= 0;
     end
 end
